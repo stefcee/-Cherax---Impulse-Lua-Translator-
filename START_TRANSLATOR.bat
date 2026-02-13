@@ -18,7 +18,7 @@ echo Checking dependencies...
 pip show deep-translator >nul 2>&1
 if errorlevel 1 (
     echo Installing required packages...
-    pip install deep-translator requests
+    pip install -r requirements.txt
 )
 
 echo.

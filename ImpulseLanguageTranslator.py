@@ -1,15 +1,23 @@
 """
 Impulse Language Translator
 Created by: Stefc3
-GitHub: github.com/Stefcee
+GitHub: github.com/Stefcee/-Cherax---Impulse-Lua-Translator-
 Discord: DC.gg/chatify
-Version: 1.0.0
 
 Professional translation tool for Impulse nested JSON language files.
 Supports 56 languages with smart batch processing and resume function.
 
 Developed with AI assistance from Claude Sonnet
 """
+
+# ============================================
+# VERSION - Edit this when releasing updates
+# ============================================
+__version__ = "1.0"
+GITHUB_REPO = "https://github.com/stefcee/-Cherax---Impulse-Lua-Translator-"
+VERSION_CHECK_URL = "https://gist.githubusercontent.com/stefcee/4de0ae1b52c7c1d786e8ad2b8b0d881c/raw"
+ICON_URL = "https://i.ibb.co/W40PTgZN/Futuristisches-App-Icon-Design-removebg-preview.png"
+# ============================================
 
 import json
 import time
@@ -24,12 +32,15 @@ from deep_translator import GoogleTranslator
 class ImpulseLanguageTranslator:
     def __init__(self, root):
         self.root = root
-        self.root.title("Impulse Language Translator")
+        self.root.title(f"Impulse Language Translator v{__version__}")
         self.root.geometry("800x920")
         self.running = False
         self.input_path = tk.StringVar()
         self.output_path = tk.StringVar()
         self.target_lang_name = tk.StringVar(value="French")
+
+        # Try to set window icon
+        self.set_window_icon()
 
         # Erweiterte Sprachenliste
         self.languages = {
@@ -50,13 +61,124 @@ class ImpulseLanguageTranslator:
 
         self.setup_ui()
         self.update_ip()
+        # Check for updates after UI is loaded
+        self.root.after(1000, self.check_for_updates)
+
+    def set_window_icon(self):
+        """Try to download and set window icon"""
+        try:
+            import urllib.request
+            from PIL import Image, ImageTk
+            import io
+
+            # Download icon
+            response = urllib.request.urlopen(ICON_URL, timeout=3)
+            image_data = response.read()
+
+            # Convert to PhotoImage
+            image = Image.open(io.BytesIO(image_data))
+            image = image.resize((32, 32), Image.Resampling.LANCZOS)
+            photo = ImageTk.PhotoImage(image)
+
+            # Set icon
+            self.root.iconphoto(True, photo)
+        except:
+            pass  # Silently fail if icon can't be loaded
+
+    def check_for_updates(self):
+        """Check if a new version is available (with anti-cache)"""
+        def _check():
+            try:
+                # Verhindert, dass GitHub eine alte Version aus dem Cache sendet
+                nocache_url = VERSION_CHECK_URL + "?t=" + str(time.time())
+                response = requests.get(nocache_url, timeout=5)
+                if response.status_code == 200:
+                    latest_version = response.text.strip()
+                    if latest_version != __version__:
+                        self.root.after(0, lambda: self.show_update_dialog(latest_version))
+            except:
+                pass  # Silently fail if update check doesn't work
+
+        threading.Thread(target=_check, daemon=True).start()
+
+    def show_update_dialog(self, new_version):
+        """Show update available dialog - SIMPLE VERSION"""
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Update Available")
+        dialog.configure(bg="white")
+
+        # Feste Größe
+        width = 500
+        height = 350
+
+        # Zentrieren
+        screen_width = dialog.winfo_screenwidth()
+        screen_height = dialog.winfo_screenheight()
+        x = (screen_width - width) // 2
+        y = (screen_height - height) // 2
+
+        dialog.geometry(f"{width}x{height}+{x}+{y}")
+        dialog.resizable(False, False)
+        dialog.transient(self.root)
+        dialog.grab_set()
+
+        # Icon (mit place - absolute Positionierung)
+        icon = tk.Label(dialog, text="🎉", font=("Arial", 50), bg="white")
+        icon.place(x=220, y=20)
+
+        # Titel
+        title = tk.Label(dialog, text="New Update Available!", 
+                        font=("Arial", 18, "bold"), bg="white")
+        title.place(x=110, y=100)
+
+        # Current Version
+        current = tk.Label(dialog, text=f"Current Version: {__version__}", 
+                          font=("Arial", 12), bg="white")
+        current.place(x=150, y=160)
+
+        # Latest Version
+        latest = tk.Label(dialog, text=f"Latest Version: {new_version}", 
+                         font=("Arial", 12, "bold"), fg="green", bg="white")
+        latest.place(x=155, y=190)
+
+        # Download Button
+        def on_download():
+            webbrowser.open(GITHUB_REPO)
+            dialog.destroy()
+
+        btn_download = tk.Button(dialog, text="Download", command=on_download,
+                                font=("Arial", 12, "bold"), bg="#4CAF50", fg="white",
+                                width=12, height=2, cursor="hand2", relief=tk.RAISED, bd=2)
+        btn_download.place(x=100, y=250)
+
+        # OK Button
+        btn_ok = tk.Button(dialog, text="OK", command=dialog.destroy,
+                          font=("Arial", 12), bg="#e0e0e0", fg="black",
+                          width=12, height=2, cursor="hand2", relief=tk.RAISED, bd=2)
+        btn_ok.place(x=280, y=250)
+
+        # Hover effects
+        def on_enter_dl(e):
+            btn_download.config(bg="#45a049")
+        def on_leave_dl(e):
+            btn_download.config(bg="#4CAF50")
+        def on_enter_ok(e):
+            btn_ok.config(bg="#d0d0d0")
+        def on_leave_ok(e):
+            btn_ok.config(bg="#e0e0e0")
+
+        btn_download.bind("<Enter>", on_enter_dl)
+        btn_download.bind("<Leave>", on_leave_dl)
+        btn_ok.bind("<Enter>", on_enter_ok)
+        btn_ok.bind("<Leave>", on_leave_ok)
 
     def setup_ui(self):
         main_frame = ttk.Frame(self.root, padding="20")
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         ttk.Label(main_frame, text="🚀 IMPULSE LANGUAGE TRANSLATOR", font=("Arial", 18, "bold")).pack(pady=5)
-        ttk.Label(main_frame, text="Created by Stefc3 • 56 Languages", font=("Arial", 9, "italic")).pack(pady=5)
+        ttk.Label(main_frame, text=f"Created by Stefc3 • v{__version__} • 56 Languages", 
+                 font=("Arial", 9, "italic")).pack(pady=5)
 
         # Dateiauswahl
         file_frame = ttk.LabelFrame(main_frame, text="📁 FILE SELECTION", padding="10")
@@ -134,7 +256,7 @@ class ImpulseLanguageTranslator:
         discord_btn.pack(side=tk.LEFT, padx=5)
 
         github_btn = ttk.Button(links_frame, text="⭐ GitHub", 
-                               command=lambda: self.open_link("https://github.com/Stefcee"))
+                               command=lambda: self.open_link(GITHUB_REPO))
         github_btn.pack(side=tk.LEFT, padx=5)
 
     def open_link(self, url):
@@ -156,9 +278,9 @@ class ImpulseLanguageTranslator:
 
     def auto_update_filename(self, event=None):
         if self.input_path.get():
+            import re
             lang_code = self.languages.get(self.target_lang_name.get(), "fr").upper()
             base = os.path.splitext(self.input_path.get())[0]
-            import re
             base = re.sub(r'_[A-Z]{2}(-[A-Z]{2})?$', '', base)
             self.output_path.set(f"{base}_{lang_code}.json")
 
@@ -203,11 +325,9 @@ class ImpulseLanguageTranslator:
         if not self.input_path.get():
             messagebox.showwarning("Warning", "Please select a source JSON file!")
             return
-
         if not self.output_path.get():
             messagebox.showwarning("Warning", "Please select an output path!")
             return
-
         self.running = True
         self.start_btn.config(state='disabled')
         self.stop_btn.config(state='normal')
@@ -278,8 +398,7 @@ class ImpulseLanguageTranslator:
 
             translator = GoogleTranslator(source='auto', target=target_code)
 
-            i = 0
-            batch_count = 0
+            i, batch_count = 0, 0
             while i < len(keys_todo) and self.running:
                 aggro = float(self.aggro_slider.get())
 
@@ -290,19 +409,16 @@ class ImpulseLanguageTranslator:
                 else:
                     limit, delay = 4900, 0.1
 
-                current_batch_keys = []
-                current_batch_char_count = 0
+                current_batch_keys, current_batch_char_count = [], 0
 
                 if limit > 0:
                     while i < len(keys_todo) and self.running:
                         k = keys_todo[i]
                         val = flat_source[k]
-
                         if val is None:
                             flat_translated[k] = None
                             i += 1
                             continue
-
                         txt = str(val)
                         if current_batch_char_count + len(txt) + 10 < limit:
                             current_batch_keys.append(k)
@@ -310,7 +426,6 @@ class ImpulseLanguageTranslator:
                             i += 1
                         else:
                             break
-
                     if not current_batch_keys and i < len(keys_todo):
                         current_batch_keys.append(keys_todo[i])
                         i += 1

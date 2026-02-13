@@ -7,10 +7,11 @@ Created by **[Stefc3](https://github.com/Stefcee)**
 ## ✨ Features
 
 - 🌍 **56 Languages supported** - French, German, Spanish, Chinese, Russian, Japanese, and many more
-- 📦 **Nested JSON structure** - Handles complex menu translations perfectly
+- 📦 **Nested JSON structure** - Handles complex Impulse menu translations perfectly
 - 💾 **Resume function** - Cache system saves progress if interrupted
 - ⚡ **3 Speed modes** - Slow/Safe, Normal, or Fast batch translation
 - 🎯 **Smart handling** - Preserves null values and nested structure automatically
+- 🔄 **Auto-Update** - Checks for new versions automatically
 
 ## 🛡️ Important
 
@@ -25,7 +26,7 @@ Change your IP if you encounter translation errors during the process.
 ## 📥 Installation
 
 ### Method 1: Quick Start (Windows)
-1. Download all 3 files: `ImpulseLanguageTranslator.py`, `START_TRANSLATOR.bat`, `requirements.txt`
+1. Download all files from this repository
 2. Double-click `START_TRANSLATOR.bat` to auto-install dependencies & launch
 
 ### Method 2: Manual Installation
@@ -39,7 +40,7 @@ python ImpulseLanguageTranslator.py
 
 ## 🎮 Usage
 
-1. **Select Source File** - Choose your `generated.json` file
+1. **Select Source File** - Choose your `generated.json` file from Impulse
 2. **Choose Target Language** - Select from 56 available languages (e.g., French, German)
 3. **Set Translation Speed**:
    - **Slow & Safe** - Single translation mode, safest for rate limits
@@ -88,9 +89,21 @@ ImpulseLanguageTranslator/
 
 ## 🎯 Perfect For
 
+- GTA V mod menu translations (Impulse, Cherax compatible)
 - Complex nested JSON language files
 - Bulk translations (2000+ entries)
 - Multi-language mod distribution
+
+## 📝 Changelog
+
+### Version 1.0
+- Initial release
+- Support for 56 languages
+- Nested JSON structure handling
+- Resume function with cache system
+- 3 speed modes for different use cases
+- Auto-update system
+- Custom window icon
 
 ## 🤝 Contributing
 
